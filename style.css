@@ -121,6 +121,13 @@ body {
   color: var(--accent);
 }
 
+.no-signup {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
 /* Main */
 .main {
   max-width: 1100px;
