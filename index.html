@@ -6,7 +6,7 @@
   <title>Reel Search — Movie Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,36 +21,11 @@
   </header>
 
   <main class="dashboard-main">
-    <!-- Search panel -->
     <section id="searchSection" class="panel search-panel">
-      <h2 class="panel-title">Discover</h2>
-      <p class="panel-desc">Find movies and series. No signup.</p>
       <div class="search-box">
         <input type="text" id="movieQuery" placeholder="Search by title…" autocomplete="off" aria-label="Search">
         <button type="button" id="searchBtn" class="btn-search">Search</button>
       </div>
-      <details class="search-options">
-        <summary>Filter & sort</summary>
-        <div class="options-inner">
-          <label class="opt">
-            <span>Type</span>
-            <select id="searchType" aria-label="Type">
-              <option value="">All</option>
-              <option value="movie">Movie</option>
-              <option value="series">Series</option>
-            </select>
-          </label>
-          <label class="opt">
-            <span>Sort</span>
-            <select id="searchSort" aria-label="Sort">
-              <option value="year-desc">Newest</option>
-              <option value="year-asc">Oldest</option>
-              <option value="title-asc">A–Z</option>
-            </select>
-          </label>
-        </div>
-      </details>
-      <p id="setupHint" class="setup-hint hidden">Add your free API key in <code>app.js</code> (line 6). Get one at <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noopener">omdbapi.com</a>.</p>
     </section>
 
     <div id="loading" class="loading hidden">
@@ -60,7 +35,6 @@
 
     <div id="error" class="error hidden" role="alert"></div>
 
-    <!-- Results panel -->
     <section id="resultsSection" class="panel results-panel hidden">
       <div class="panel-header">
         <h2 id="resultsHeading" class="panel-title">Results</h2>
@@ -69,13 +43,11 @@
       <div id="pagination" class="pagination hidden"></div>
     </section>
 
-    <!-- Detail panel -->
     <section id="detailSection" class="panel detail-panel hidden">
       <button type="button" id="backBtn" class="btn-back">← Back to results</button>
       <article id="detailContent" class="detail-content"></article>
     </section>
 
-    <!-- Watchlist panel -->
     <section id="watchlistSection" class="panel watchlist-panel hidden">
       <div class="panel-header">
         <h2 class="panel-title">My List</h2>
@@ -85,19 +57,15 @@
       <p id="watchlistEmpty" class="watchlist-empty hidden">No titles yet. Search and tap ♥ to add.</p>
     </section>
 
-    <!-- Empty / welcome state -->
     <section id="emptyState" class="panel empty-panel">
       <div class="empty-content">
         <span class="empty-icon">🎬</span>
-        <h2 class="empty-title">Ready to search</h2>
-        <p class="empty-desc">Use the search above to find movies and series.</p>
-        <p class="empty-suggest">Try: <strong>Inception</strong>, <strong>Parasite</strong>, <strong>Breaking Bad</strong></p>
       </div>
     </section>
   </main>
 
   <footer class="dashboard-footer">
-    <p>Free · No account · <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a></p>
+    <p>Free · No account</p>
   </footer>
 
   <script src="app.js"></script>
