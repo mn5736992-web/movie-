@@ -3,65 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reel Search — For Movie Lovers</title>
+  <title>Reel Search — Find Movies</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="noise"></div>
   <header class="header">
+    <h1 class="logo">Reel Search</h1>
+    <p class="tagline">Find movies and series. No signup.</p>
     <nav class="nav">
-      <a href="#" class="nav-link active" data-view="search">Discover</a>
+      <a href="#" class="nav-link active" data-view="search">Search</a>
       <a href="#" class="nav-link" data-view="watchlist">My List <span id="watchlistCount" class="nav-badge">0</span></a>
     </nav>
-    <p class="no-signup">No login or email. Use the app and save your list on this device.</p>
-    <h1 class="logo">Reel Search</h1>
-    <p class="tagline">Made for movie lovers. Find any film, anytime.</p>
   </header>
 
   <main class="main">
     <section id="searchSection" class="search-section">
       <div class="search-box">
-        <input
-          type="text"
-          id="movieQuery"
-          placeholder="What do you want to watch?"
-          autocomplete="off"
-          aria-label="Search movies and series"
-        >
-        <button type="button" id="searchBtn" class="btn-search" aria-label="Search">
-          <span class="btn-text">Find it</span>
-          <span class="btn-icon" aria-hidden="true">▶</span>
-        </button>
+        <input type="text" id="movieQuery" placeholder="Search for a movie or series…" autocomplete="off" aria-label="Search">
+        <button type="button" id="searchBtn" class="btn-search">Search</button>
       </div>
-      <div class="search-options">
-        <label class="search-option">
-          <span>Type</span>
-          <select id="searchType" aria-label="Filter by type">
-            <option value="">All</option>
-            <option value="movie">Movie</option>
-            <option value="series">Series</option>
-            <option value="episode">Episode</option>
-          </select>
-        </label>
-        <label class="search-option">
-          <span>Sort</span>
-          <select id="searchSort" aria-label="Sort results">
-            <option value="year-desc">Newest first</option>
-            <option value="year-asc">Oldest first</option>
-            <option value="title-asc">Title A–Z</option>
-            <option value="title-desc">Title Z–A</option>
-          </select>
-        </label>
-      </div>
-      <p class="api-hint">Uses the free <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a>. Add your key in <code>app.js</code>.</p>
+      <details class="search-options">
+        <summary>Options</summary>
+        <div class="options-inner">
+          <label class="opt">
+            <span>Type</span>
+            <select id="searchType" aria-label="Type">
+              <option value="">All</option>
+              <option value="movie">Movie</option>
+              <option value="series">Series</option>
+            </select>
+          </label>
+          <label class="opt">
+            <span>Sort</span>
+            <select id="searchSort" aria-label="Sort">
+              <option value="year-desc">Newest</option>
+              <option value="year-asc">Oldest</option>
+              <option value="title-asc">A–Z</option>
+            </select>
+          </label>
+        </div>
+      </details>
+      <p id="setupHint" class="setup-hint hidden">Add your free API key in <code>app.js</code> (line 6). Get one at <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noopener">omdbapi.com</a>.</p>
     </section>
 
-    <div id="loading" class="loading hidden" aria-live="polite">
+    <div id="loading" class="loading hidden">
       <div class="spinner"></div>
-      <p id="loadingText">Rolling the reels…</p>
+      <p>Searching…</p>
     </div>
 
     <div id="error" class="error hidden" role="alert"></div>
@@ -73,29 +63,24 @@
     </section>
 
     <section id="detailSection" class="detail-section hidden">
-      <button type="button" id="backBtn" class="btn-back" aria-label="Back to results">← Back</button>
+      <button type="button" id="backBtn" class="btn-back">← Back</button>
       <article id="detailContent" class="detail-content"></article>
     </section>
 
     <section id="watchlistSection" class="watchlist-section hidden">
-      <h2 class="watchlist-heading">My Must-Watch List</h2>
+      <h2 class="watchlist-heading">My List</h2>
       <div id="watchlistGrid" class="results-grid"></div>
-      <p id="watchlistEmpty" class="watchlist-empty hidden">Your list is empty—but not for long. Discover something, tap the ♥, and it’ll show up here.</p>
+      <p id="watchlistEmpty" class="watchlist-empty hidden">No titles yet. Search and tap ♥ to add.</p>
     </section>
 
-    <div id="setupHint" class="setup-hint hidden">
-      <strong>Get search working:</strong> Get a free API key from <a href="https://www.omdbapi.com/apikey.aspx" target="_blank" rel="noopener">omdbapi.com</a>, then open <code>app.js</code> and replace <code>your_api_key_here</code> with your key. If you opened this file by double‑clicking, try running a local server instead (e.g. <code>npx serve .</code> in this folder).
-    </div>
     <section id="emptyState" class="empty-state">
-      <div class="empty-icon">🎬</div>
-      <p class="empty-lead">Your next favorite is a search away.</p>
-      <p class="empty-sub">Try "The Shawshank Redemption", "Parasite", "Inception", or "Spirited Away".</p>
-      <p class="empty-quote" id="emptyQuote"></p>
+      <p class="empty-lead">Search for any movie or series above.</p>
+      <p class="empty-sub">Try: Inception, Parasite, Breaking Bad</p>
     </section>
   </main>
 
   <footer class="footer">
-    <p>Built for movie lovers · Powered by <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a></p>
+    <p>Free · No account · <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a></p>
   </footer>
 
   <script src="app.js"></script>
