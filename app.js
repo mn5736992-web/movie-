@@ -7,34 +7,12 @@ const API_KEY = "your_api_key_here"; // Replace with your key from omdbapi.com
 const BASE_URL = "https://www.omdbapi.com/";
 const WATCHLIST_KEY = "reel-search-watchlist";
 
-const LOADING_MESSAGES = [
-  "Rolling the reels…",
-  "Checking the vault…",
-  "Finding your next favorite…",
-  "Lights, camera, search…",
-  "Scanning the archives…",
-];
-
-const MOVIE_QUOTES = [
-  "\"Movies can and do have tremendous influence in shaping young lives.\" — Walt Disney",
-  "\"Cinema is a matter of what's in the frame and what's out.\" — Martin Scorsese",
-  "\"Good movies make you care.\" — Roger Ebert",
-  "\"I'll be back.\" — The Terminator",
-  "\"Here's looking at you, kid.\" — Casablanca",
-  "\"May the Force be with you.\" — Star Wars",
-  "\"You're gonna need a bigger boat.\" — Jaws",
-  "\"Just keep swimming.\" — Finding Nemo",
-  "\"To infinity and beyond!\" — Toy Story",
-  "\"I'm the king of the world!\" — Titanic",
-];
-
 const elements = {
   movieQuery: document.getElementById("movieQuery"),
   searchBtn: document.getElementById("searchBtn"),
   searchType: document.getElementById("searchType"),
   searchSort: document.getElementById("searchSort"),
   loading: document.getElementById("loading"),
-  loadingText: document.getElementById("loadingText"),
   error: document.getElementById("error"),
   resultsSection: document.getElementById("resultsSection"),
   resultsHeading: document.getElementById("resultsHeading"),
@@ -99,9 +77,6 @@ function updateWatchlistCount() {
 function showLoading(show) {
   elements.loading?.classList.toggle("hidden", !show);
   if (elements.searchBtn) elements.searchBtn.disabled = show;
-  if (show && elements.loadingText) {
-    elements.loadingText.textContent = LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
-  }
 }
 
 function showError(message) {
@@ -166,12 +141,12 @@ function parseYear(y) {
 
 async function searchMovies(query, page = 1) {
   if (!query.trim()) {
-    showError("Type something you’re in the mood for—we’ll find it.");
+    showError("Type a movie or series name to search.");
     return;
   }
 
   if (API_KEY === "your_api_key_here") {
-    showError("Add your OMDb API key in app.js to start discovering. Get one free at omdbapi.com.");
+    showError("Add your API key in app.js (line 6). Get a free key at omdbapi.com.");
     return;
   }
 
@@ -189,7 +164,7 @@ async function searchMovies(query, page = 1) {
 
     if (data.Response === "False") {
       showLoading(false);
-      showError(data.Error || "No titles found for that. Try another name or a different spelling.");
+      showError("Nothing found. Try another name.");
       showEmptyState(true);
       return;
     }
@@ -202,16 +177,17 @@ async function searchMovies(query, page = 1) {
     list = sortResults(list, sort);
 
     if (elements.resultsHeading) elements.resultsHeading.textContent = total === 1
-      ? `We found 1 title for "${query}"`
-      : `We found ${total} titles for "${query}"`;
+      ? `1 result for "${query}"`
+      : `${total} results for "${query}"`;
     renderResults(list);
     renderPagination();
     showResults(true);
     showEmptyState(false);
     const sh = document.getElementById("setupHint");
     if (sh) sh.classList.add("hidden");
+    elements.resultsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
-    showError(err.message || "Something went wrong. Check your connection and try again.");
+    showError("Something went wrong. Check your connection and try again.");
     showEmptyState(true);
   } finally {
     showLoading(false);
@@ -341,14 +317,14 @@ async function openDetail(imdbId) {
     const data = await fetchJson(url);
 
     if (data.Response === "False") {
-      showError(data.Error || "Couldn’t load this one. Try again in a moment.");
+      showError("Couldn’t load details. Try again.");
       showLoading(false);
       return;
     }
 
     renderDetail(data);
   } catch (err) {
-    showError(err.message || "Couldn’t load this title. Try again in a moment.");
+    showError("Couldn’t load details. Try again.");
   } finally {
     showLoading(false);
   }
@@ -564,11 +540,6 @@ updateWatchlistCount();
 const setupHintEl = document.getElementById("setupHint");
 if (setupHintEl && API_KEY === "your_api_key_here") {
   setupHintEl.classList.remove("hidden");
-}
-
-const emptyQuoteEl = document.getElementById("emptyQuote");
-if (emptyQuoteEl && MOVIE_QUOTES.length) {
-  emptyQuoteEl.textContent = MOVIE_QUOTES[Math.floor(Math.random() * MOVIE_QUOTES.length)];
 }
 
 elements.movieQuery?.focus();
