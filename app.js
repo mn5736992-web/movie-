@@ -1,10 +1,9 @@
 /**
- * Reel Search — Movie search app using OMDb API
- * Get a free API key at https://www.omdbapi.com/apikey.aspx
+ * Reel Search — Movie search app (no API key in the app)
+ * Run the included server with OMDB_KEY set: node server.js
  */
 
-const API_KEY = "your_api_key_here"; // Replace with your key from omdbapi.com
-const BASE_URL = "https://www.omdbapi.com/";
+const API_BASE = ""; // Use same origin; server proxies to OMDb with key
 const WATCHLIST_KEY = "reel-search-watchlist";
 
 const elements = {
@@ -113,8 +112,8 @@ async function fetchJson(url) {
 }
 
 function buildUrl(params) {
-  const search = new URLSearchParams({ ...params, apikey: API_KEY });
-  return `${BASE_URL}?${search}`;
+  const search = new URLSearchParams(params);
+  return `${API_BASE}/api/omdb?${search}`;
 }
 
 function sortResults(list, sortKey) {
@@ -145,11 +144,6 @@ function parseYear(y) {
 async function searchMovies(query, page = 1) {
   if (!query.trim()) {
     showError("Type a movie or series name to search.");
-    return;
-  }
-
-  if (API_KEY === "your_api_key_here") {
-    showError("Add your API key in app.js (line 6). Get a free key at omdbapi.com.");
     return;
   }
 
@@ -186,8 +180,6 @@ async function searchMovies(query, page = 1) {
     renderPagination();
     showResults(true);
     showEmptyState(false);
-    const sh = document.getElementById("setupHint");
-    if (sh) sh.classList.add("hidden");
     elements.resultsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
     showError("Something went wrong. Check your connection and try again.");
@@ -557,10 +549,4 @@ document.querySelector(".logo")?.addEventListener("click", (e) => {
 });
 
 updateWatchlistCount();
-
-const setupHintEl = document.getElementById("setupHint");
-if (setupHintEl && API_KEY === "your_api_key_here") {
-  setupHintEl.classList.remove("hidden");
-}
-
 elements.movieQuery?.focus();
