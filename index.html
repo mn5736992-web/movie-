@@ -3,30 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reel Search — Find Movies</title>
+  <title>Reel Search — Movie Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="header">
-    <h1 class="logo">Reel Search</h1>
-    <p class="tagline">Find movies and series. No signup.</p>
-    <nav class="nav">
-      <a href="#" class="nav-link active" data-view="search">Search</a>
-      <a href="#" class="nav-link" data-view="watchlist">My List <span id="watchlistCount" class="nav-badge">0</span></a>
-    </nav>
+  <header class="dashboard-bar">
+    <div class="bar-inner">
+      <a href="#" class="logo" data-view="search">Reel Search</a>
+      <nav class="nav">
+        <a href="#" class="nav-link active" data-view="search">Search</a>
+        <a href="#" class="nav-link" data-view="watchlist">My List <span id="watchlistCount" class="nav-badge">0</span></a>
+      </nav>
+    </div>
   </header>
 
-  <main class="main">
-    <section id="searchSection" class="search-section">
+  <main class="dashboard-main">
+    <!-- Search panel -->
+    <section id="searchSection" class="panel search-panel">
+      <h2 class="panel-title">Discover</h2>
+      <p class="panel-desc">Find movies and series. No signup.</p>
       <div class="search-box">
-        <input type="text" id="movieQuery" placeholder="Search for a movie or series…" autocomplete="off" aria-label="Search">
+        <input type="text" id="movieQuery" placeholder="Search by title…" autocomplete="off" aria-label="Search">
         <button type="button" id="searchBtn" class="btn-search">Search</button>
       </div>
       <details class="search-options">
-        <summary>Options</summary>
+        <summary>Filter & sort</summary>
         <div class="options-inner">
           <label class="opt">
             <span>Type</span>
@@ -56,30 +60,43 @@
 
     <div id="error" class="error hidden" role="alert"></div>
 
-    <section id="resultsSection" class="results-section hidden">
-      <h2 id="resultsHeading" class="results-heading"></h2>
+    <!-- Results panel -->
+    <section id="resultsSection" class="panel results-panel hidden">
+      <div class="panel-header">
+        <h2 id="resultsHeading" class="panel-title">Results</h2>
+      </div>
       <div id="resultsGrid" class="results-grid"></div>
       <div id="pagination" class="pagination hidden"></div>
     </section>
 
-    <section id="detailSection" class="detail-section hidden">
-      <button type="button" id="backBtn" class="btn-back">← Back</button>
+    <!-- Detail panel -->
+    <section id="detailSection" class="panel detail-panel hidden">
+      <button type="button" id="backBtn" class="btn-back">← Back to results</button>
       <article id="detailContent" class="detail-content"></article>
     </section>
 
-    <section id="watchlistSection" class="watchlist-section hidden">
-      <h2 class="watchlist-heading">My List</h2>
+    <!-- Watchlist panel -->
+    <section id="watchlistSection" class="panel watchlist-panel hidden">
+      <div class="panel-header">
+        <h2 class="panel-title">My List</h2>
+        <span id="watchlistCountLabel" class="panel-meta"></span>
+      </div>
       <div id="watchlistGrid" class="results-grid"></div>
       <p id="watchlistEmpty" class="watchlist-empty hidden">No titles yet. Search and tap ♥ to add.</p>
     </section>
 
-    <section id="emptyState" class="empty-state">
-      <p class="empty-lead">Search for any movie or series above.</p>
-      <p class="empty-sub">Try: Inception, Parasite, Breaking Bad</p>
+    <!-- Empty / welcome state -->
+    <section id="emptyState" class="panel empty-panel">
+      <div class="empty-content">
+        <span class="empty-icon">🎬</span>
+        <h2 class="empty-title">Ready to search</h2>
+        <p class="empty-desc">Use the search above to find movies and series.</p>
+        <p class="empty-suggest">Try: <strong>Inception</strong>, <strong>Parasite</strong>, <strong>Breaking Bad</strong></p>
+      </div>
     </section>
   </main>
 
-  <footer class="footer">
+  <footer class="dashboard-footer">
     <p>Free · No account · <a href="https://www.omdbapi.com/" target="_blank" rel="noopener">OMDb API</a></p>
   </footer>
 
