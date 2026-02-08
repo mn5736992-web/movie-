@@ -727,6 +727,39 @@ body {
   display: none;
 }
 
+/* Setup hint */
+.setup-hint {
+  max-width: 520px;
+  margin: 0 auto 1.5rem;
+  padding: 1rem 1.25rem;
+  background: rgba(201, 162, 39, 0.12);
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.setup-hint.hidden {
+  display: none;
+}
+
+.setup-hint a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.setup-hint a:hover {
+  text-decoration: underline;
+}
+
+.setup-hint code {
+  padding: 0.15em 0.35em;
+  background: var(--surface);
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
 /* Empty state */
 .empty-state {
   text-align: center;
