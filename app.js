@@ -97,32 +97,35 @@ function updateWatchlistCount() {
 }
 
 function showLoading(show) {
-  elements.loading.classList.toggle("hidden", !show);
-  elements.searchBtn.disabled = show;
+  elements.loading?.classList.toggle("hidden", !show);
+  if (elements.searchBtn) elements.searchBtn.disabled = show;
   if (show && elements.loadingText) {
     elements.loadingText.textContent = LOADING_MESSAGES[Math.floor(Math.random() * LOADING_MESSAGES.length)];
   }
 }
 
 function showError(message) {
-  elements.error.textContent = message;
-  elements.error.classList.remove("hidden");
+  if (elements.error) {
+    elements.error.textContent = message;
+    elements.error.classList.remove("hidden");
+  }
 }
 
 function hideError() {
-  elements.error.classList.add("hidden");
+  elements.error?.classList.add("hidden");
 }
 
 function showEmptyState(show) {
-  document.querySelector(".empty-state").style.display = show ? "block" : "none";
+  const el = document.querySelector(".empty-state");
+  if (el) el.style.display = show ? "block" : "none";
 }
 
 function showResults(show) {
-  elements.resultsSection.classList.toggle("hidden", !show);
+  elements.resultsSection?.classList.toggle("hidden", !show);
 }
 
 function showDetail(show) {
-  elements.detailSection.classList.toggle("hidden", !show);
+  elements.detailSection?.classList.toggle("hidden", !show);
 }
 
 async function fetchJson(url) {
@@ -198,15 +201,17 @@ async function searchMovies(query, page = 1) {
     const sort = (elements.searchSort && elements.searchSort.value) || "year-desc";
     list = sortResults(list, sort);
 
-    elements.resultsHeading.textContent = total === 1
-  ? `We found 1 title for "${query}"`
-  : `We found ${total} titles for "${query}"`;
+    if (elements.resultsHeading) elements.resultsHeading.textContent = total === 1
+      ? `We found 1 title for "${query}"`
+      : `We found ${total} titles for "${query}"`;
     renderResults(list);
     renderPagination();
     showResults(true);
     showEmptyState(false);
+    const sh = document.getElementById("setupHint");
+    if (sh) sh.classList.add("hidden");
   } catch (err) {
-      showError(err.message || "Something went wrong. Check your connection and try again.");
+    showError(err.message || "Something went wrong. Check your connection and try again.");
     showEmptyState(true);
   } finally {
     showLoading(false);
@@ -214,6 +219,7 @@ async function searchMovies(query, page = 1) {
 }
 
 function renderResults(list) {
+  if (!elements.resultsGrid) return;
   elements.resultsGrid.innerHTML = list
     .map((item) => {
       const inList = isInWatchlist(item.imdbID);
@@ -288,6 +294,7 @@ function toggleWatchlistOnCard(imdbId, cardOrBtn) {
 }
 
 function renderPagination() {
+  if (!elements.pagination) return;
   if (totalPages <= 1) {
     elements.pagination.classList.add("hidden");
     elements.pagination.innerHTML = "";
@@ -327,7 +334,7 @@ async function openDetail(imdbId) {
   showDetail(true);
   if (elements.resultsSection) elements.resultsSection.classList.add("hidden");
   if (elements.watchlistSection) elements.watchlistSection.classList.add("hidden");
-  elements.detailContent.innerHTML = "";
+  if (elements.detailContent) elements.detailContent.innerHTML = "";
 
   try {
     const url = buildUrl({ i: imdbId });
@@ -374,6 +381,7 @@ function renderDetail(data) {
     .map(([label, value]) => `<dt>${label}</dt><dd>${value}</dd>`)
     .join("");
 
+  if (!elements.detailContent) return;
   elements.detailContent.innerHTML = `
     <div class="detail-poster-wrap">${posterHtml}</div>
     <div class="detail-body">
@@ -536,13 +544,13 @@ function renderWatchlistView() {
 }
 
 // Event listeners
-elements.searchBtn.addEventListener("click", () => searchMovies(elements.movieQuery.value.trim()));
+elements.searchBtn?.addEventListener("click", () => searchMovies(elements.movieQuery?.value?.trim() ?? ""));
 
-elements.movieQuery.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") searchMovies(elements.movieQuery.value.trim());
+elements.movieQuery?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") searchMovies(elements.movieQuery?.value?.trim() ?? "");
 });
 
-elements.backBtn.addEventListener("click", goBack);
+elements.backBtn?.addEventListener("click", goBack);
 
 document.querySelectorAll(".nav-link").forEach((link) => {
   link.addEventListener("click", (e) => {
@@ -553,9 +561,14 @@ document.querySelectorAll(".nav-link").forEach((link) => {
 
 updateWatchlistCount();
 
+const setupHintEl = document.getElementById("setupHint");
+if (setupHintEl && API_KEY === "your_api_key_here") {
+  setupHintEl.classList.remove("hidden");
+}
+
 const emptyQuoteEl = document.getElementById("emptyQuote");
 if (emptyQuoteEl && MOVIE_QUOTES.length) {
   emptyQuoteEl.textContent = MOVIE_QUOTES[Math.floor(Math.random() * MOVIE_QUOTES.length)];
 }
 
-elements.movieQuery.focus();
+elements.movieQuery?.focus();
