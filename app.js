@@ -1,9 +1,9 @@
 /**
- * Reel Search — Movie search app (no API key in the app)
- * Run the included server with OMDB_KEY set: node server.js
+ * Reel Search — Movie search app
+ * Run: TMDB_KEY=yourkey node server.js — then open http://localhost:3000
  */
 
-const API_BASE = ""; // Use same origin; server proxies to OMDb with key
+const API_BASE = typeof window !== "undefined" ? window.location.origin : "";
 const WATCHLIST_KEY = "reel-search-watchlist";
 
 const elements = {
@@ -111,9 +111,14 @@ async function fetchJson(url) {
   return res.json();
 }
 
-function buildUrl(params) {
-  const search = new URLSearchParams(params);
-  return `${API_BASE}/api/omdb?${search}`;
+function buildSearchUrl(query, page, type) {
+  const params = { q: query, page: String(page) };
+  if (type) params.type = type;
+  return `${API_BASE}/api/search?${new URLSearchParams(params)}`;
+}
+
+function buildDetailUrl(id) {
+  return `${API_BASE}/api/detail?${new URLSearchParams({ id })}`;
 }
 
 function sortResults(list, sortKey) {
@@ -156,7 +161,7 @@ async function searchMovies(query, page = 1) {
 
   try {
     const type = (elements.searchType && elements.searchType.value) || "";
-    const url = buildUrl({ s: query.trim(), page, ...(type && { type }) });
+    const url = buildSearchUrl(String(query).trim(), page, type || undefined);
     const data = await fetchJson(url);
 
     if (data.Response === "False") {
@@ -308,7 +313,7 @@ async function openDetail(imdbId) {
   if (elements.detailContent) elements.detailContent.innerHTML = "";
 
   try {
-    const url = buildUrl({ i: imdbId });
+    const url = buildDetailUrl(imdbId);
     const data = await fetchJson(url);
 
     if (data.Response === "False") {
@@ -373,7 +378,6 @@ function renderDetail(data) {
         <div class="detail-actions">${watchlistBtn} ${trailerBtn}</div>
         ${data.Plot && data.Plot !== "N/A" ? `<p class="detail-plot">${escapeHtml(data.Plot)}</p>` : ""}
         <dl class="detail-grid">${rows}</dl>
-        <div id="moreFromDirector" class="more-from-director"></div>
       </div>
     </div>
   `;
@@ -395,64 +399,19 @@ function renderDetail(data) {
     });
   }
 
-  if (data.Director && data.Director !== "N/A") {
-    loadMoreFromDirector(data.Director, data.imdbID);
-  }
 }
 
 function buildRatingsHtml(data) {
   const ratings = data.Ratings || [];
-  const imdb = data.imdbRating && data.imdbRating !== "N/A" ? data.imdbRating : (ratings.find((r) => r.Source === "Internet Movie Database") || {}).Value;
+  const main = data.imdbRating && data.imdbRating !== "N/A" ? data.imdbRating : (ratings.find((r) => r.Source === "Internet Movie Database") || {}).Value;
   const rt = (ratings.find((r) => r.Source === "Rotten Tomatoes") || {}).Value;
   const mc = (ratings.find((r) => r.Source === "Metacritic") || {}).Value;
   const pills = [];
-  if (imdb) pills.push(`<span class="rating-pill imdb">⭐ ${imdb}</span>`);
-  if (rt) pills.push(`<span class="rating-pill rotten">🍅 ${rt}</span>`);
-  if (mc) pills.push(`<span class="rating-pill metacritic">📊 ${mc}</span>`);
+  if (main) pills.push(`<span class="rating-pill">⭐ ${main}</span>`);
+  if (rt) pills.push(`<span class="rating-pill">🍅 ${rt}</span>`);
+  if (mc) pills.push(`<span class="rating-pill">📊 ${mc}</span>`);
   if (pills.length === 0) return "";
   return `<div class="ratings-row">${pills.join("")}</div>`;
-}
-
-async function loadMoreFromDirector(director, excludeImdbId) {
-  const container = document.getElementById("moreFromDirector");
-  if (!container) return;
-  const names = director.split(",").map((s) => s.trim()).filter(Boolean);
-  const first = names[0];
-  if (!first) return;
-
-  try {
-    const url = buildUrl({ s: first, type: "movie" });
-    const data = await fetchJson(url);
-    if (data.Response !== "True" || !data.Search) {
-      container.remove();
-      return;
-    }
-    const others = data.Search.filter((item) => item.imdbID !== excludeImdbId).slice(0, 6);
-    if (others.length === 0) {
-      container.remove();
-      return;
-    }
-    container.innerHTML = `
-      <h3>More from ${escapeHtml(first)}</h3>
-      <div class="results-grid">${others
-        .map(
-          (item) => `
-        <article class="card" data-imdb-id="${item.imdbID}" role="button" tabindex="0">
-          ${item.Poster && item.Poster !== "N/A" ? `<img class="card-poster" src="${item.Poster}" alt="" loading="lazy">` : `<div class="card-placeholder">🎬</div>`}
-          <div class="card-info">
-            <h3 class="card-title">${escapeHtml(item.Title)}</h3>
-            <p class="card-year">${escapeHtml(item.Year)}</p>
-          </div>
-        </article>`
-        )
-        .join("")}</div>
-    `;
-    container.querySelectorAll(".card").forEach((card) => {
-      card.addEventListener("click", () => openDetail(card.dataset.imdbId));
-    });
-  } catch {
-    container.remove();
-  }
 }
 
 function escapeHtml(str) {
@@ -550,3 +509,6 @@ document.querySelector(".logo")?.addEventListener("click", (e) => {
 
 updateWatchlistCount();
 elements.movieQuery?.focus();
+
+// Show Indian movies on load
+searchMovies("Bollywood");
