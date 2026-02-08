@@ -25,7 +25,9 @@ const elements = {
   watchlistGrid: document.getElementById("watchlistGrid"),
   watchlistEmpty: document.getElementById("watchlistEmpty"),
   watchlistCount: document.getElementById("watchlistCount"),
+  watchlistCountLabel: document.getElementById("watchlistCountLabel"),
   searchSection: document.getElementById("searchSection"),
+  emptyState: document.getElementById("emptyState"),
 };
 
 let currentPage = 1;
@@ -72,6 +74,7 @@ function removeFromWatchlist(imdbId) {
 function updateWatchlistCount() {
   const n = getWatchlist().length;
   if (elements.watchlistCount) elements.watchlistCount.textContent = n;
+  if (elements.watchlistCountLabel) elements.watchlistCountLabel.textContent = n ? `${n} title${n !== 1 ? "s" : ""}` : "";
 }
 
 function showLoading(show) {
@@ -91,7 +94,7 @@ function hideError() {
 }
 
 function showEmptyState(show) {
-  const el = document.querySelector(".empty-state");
+  const el = elements.emptyState;
   if (el) el.style.display = show ? "block" : "none";
 }
 
@@ -331,15 +334,10 @@ async function openDetail(imdbId) {
 }
 
 function renderDetail(data) {
-  const posterHtml =
-    data.Poster && data.Poster !== "N/A"
-      ? `<img class="detail-poster" src="${data.Poster}" alt="">`
-      : `<div class="detail-poster-placeholder">🎬</div>`;
-
+  const hasPoster = data.Poster && data.Poster !== "N/A";
   const meta = [data.Year, data.Rated !== "N/A" ? data.Rated : null, data.Runtime]
     .filter(Boolean)
     .join(" · ");
-
   const ratings = buildRatingsHtml(data);
   const inList = isInWatchlist(data.imdbID);
   const watchlistBtn = `<button type="button" class="btn-watchlist ${inList ? "in-watchlist" : ""}" data-detail-watchlist data-imdb-id="${data.imdbID}" aria-label="${inList ? "Remove from watchlist" : "Add to watchlist"}">${inList ? "♥" : "♡"} ${inList ? "In Watchlist" : "Add to Watchlist"}</button>`;
@@ -357,17 +355,34 @@ function renderDetail(data) {
     .map(([label, value]) => `<dt>${label}</dt><dd>${value}</dd>`)
     .join("");
 
-  if (!elements.detailContent) return;
-  elements.detailContent.innerHTML = `
-    <div class="detail-poster-wrap">${posterHtml}</div>
-    <div class="detail-body">
+  const heroContent = `
+    <div class="detail-hero-content">
       <h2 class="detail-title">${escapeHtml(data.Title)}</h2>
       <p class="detail-meta">${escapeHtml(meta)}</p>
-      ${ratings}
-      <div class="detail-actions">${watchlistBtn} ${trailerBtn}</div>
-      ${data.Plot && data.Plot !== "N/A" ? `<p class="detail-plot">${escapeHtml(data.Plot)}</p>` : ""}
-      <dl class="detail-grid">${rows}</dl>
-      <div id="moreFromDirector" class="more-from-director"></div>
+      <div class="detail-hero-ratings">${ratings}</div>
+    </div>
+  `;
+
+  const heroBlock = hasPoster
+    ? `<div class="detail-hero" style="--poster-url: url(${data.Poster})">
+        <div class="detail-hero-image"></div>
+        <div class="detail-hero-overlay">${heroContent}</div>
+       </div>`
+    : `<div class="detail-hero detail-hero-no-poster">
+        <div class="detail-poster-placeholder">🎬</div>
+        <div class="detail-hero-overlay">${heroContent}</div>
+       </div>`;
+
+  if (!elements.detailContent) return;
+  elements.detailContent.innerHTML = `
+    <div class="detail-image-mode">
+      ${heroBlock}
+      <div class="detail-info">
+        <div class="detail-actions">${watchlistBtn} ${trailerBtn}</div>
+        ${data.Plot && data.Plot !== "N/A" ? `<p class="detail-plot">${escapeHtml(data.Plot)}</p>` : ""}
+        <dl class="detail-grid">${rows}</dl>
+        <div id="moreFromDirector" class="more-from-director"></div>
+      </div>
     </div>
   `;
 
@@ -478,6 +493,7 @@ function showView(view) {
 
 function renderWatchlistView() {
   const list = getWatchlist();
+  if (elements.watchlistCountLabel) elements.watchlistCountLabel.textContent = list.length ? `${list.length} title${list.length !== 1 ? "s" : ""}` : "";
   if (elements.watchlistEmpty) elements.watchlistEmpty.classList.toggle("hidden", list.length > 0);
   if (elements.watchlistGrid) {
     elements.watchlistGrid.innerHTML = list.length === 0 ? "" : list.map((item) => {
@@ -533,6 +549,11 @@ document.querySelectorAll(".nav-link").forEach((link) => {
     e.preventDefault();
     showView(link.dataset.view);
   });
+});
+
+document.querySelector(".logo")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  showView("search");
 });
 
 updateWatchlistCount();
