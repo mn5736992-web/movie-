@@ -296,37 +296,6 @@ body {
   border-color: var(--accent);
 }
 
-.setup-hint {
-  margin: 1rem 0 0;
-  padding: 0.75rem 1rem;
-  background: rgba(224, 184, 61, 0.12);
-  border: 1px solid var(--accent);
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  color: var(--text);
-  line-height: 1.5;
-}
-
-.setup-hint.hidden {
-  display: none;
-}
-
-.setup-hint a {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.setup-hint a:hover {
-  text-decoration: underline;
-}
-
-.setup-hint code {
-  padding: 0.1em 0.3em;
-  background: var(--surface);
-  border-radius: 4px;
-  font-size: 0.85em;
-}
-
 /* Loading */
 .loading {
   text-align: center;
